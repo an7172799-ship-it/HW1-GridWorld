@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="互動式 n×n 網格地圖設定工具 — 設定起點、終點與障礙物" />
+  <title>GridWorld 網格設定器</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='rl_style.css') }}" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="logo-icon" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <h1>GridWorld</h1>
+    <p>網格地圖設定器</p>
+  </header>
+
+  <!-- ── Main layout ── -->
+  <main>
+
+    <!-- ── Control Panel ── -->
+    <aside class="control-panel" aria-label="控制面板">
+
+      <!-- Grid size -->
+      <div class="panel-section">
+        <h3>網格大小 (n)</h3>
+        <div class="size-selector" role="group" aria-label="選擇網格大小">
+          <button class="size-btn active" data-n="5" id="size-5" aria-pressed="true">5</button>
+          <button class="size-btn"        data-n="6" id="size-6" aria-pressed="false">6</button>
+          <button class="size-btn"        data-n="7" id="size-7" aria-pressed="false">7</button>
+          <button class="size-btn"        data-n="8" id="size-8" aria-pressed="false">8</button>
+          <button class="size-btn"        data-n="9" id="size-9" aria-pressed="false">9</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="panel-section">
+        <h3>基本操作</h3>
+        <button class="btn-primary" id="btn-generate" aria-label="生成網格">
+          ⊞ &nbsp;生成網格
+        </button>
+      </div>
+      
+      <!-- RL Actions -->
+      <div class="panel-section" id="rl-actions-section" style="display: none;">
+        <h3>執行強化學習</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn-primary" id="btn-policy-eval" aria-label="Policy Evaluation">
+            ▶ Policy Evaluation
+          </button>
+          <button class="btn-primary" id="btn-value-iter" aria-label="Value Iteration">
+            ▶ Value Iteration
+          </button>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="panel-section">
+        <h3>目前狀態</h3>
+        <div class="status-list">
+          <div class="status-item" id="mode-item">
+            <span class="dot mode"></span>
+            <span class="label">模式</span>
+            <span class="value" id="status-mode">等待中</span>
+          </div>
+          <div class="status-item">
+            <span class="dot start"></span>
+            <span class="label">起點</span>
+            <span class="value" id="status-start">—</span>
+          </div>
+          <div class="status-item">
+            <span class="dot end"></span>
+            <span class="label">終點</span>
+            <span class="value" id="status-end">—</span>
+          </div>
+          <div class="status-item">
+            <span class="dot obs"></span>
+            <span class="label">障礙物</span>
+            <span class="value" id="status-obs">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="panel-section">
+        <h3>圖例</h3>
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-swatch default"></div>
+            <span>一般格子</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-swatch start"></div>
+            <span>起點（綠色）</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-swatch end"></div>
+            <span>終點（紅色）</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-swatch obstacle"></div>
+            <span>障礙物（灰色）</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── Grid Area ── -->
+    <section class="grid-wrapper" aria-label="網格區域">
+
+      <!-- Mode indicator -->
+      <div class="mode-bar" id="mode-bar" style="display:none;" role="status">
+        <div class="mode-indicator"></div>
+        <span>目前步驟：</span>
+        <strong id="mode-text">—</strong>
+      </div>
+
+      <!-- Grid container -->
+      <div class="grid-container" id="grid-container">
+        <div class="grid-placeholder" id="placeholder">
+          <div class="icon">⊞</div>
+          <p>選擇網格大小後點擊「生成網格」</p>
+        </div>
+        <div id="grid" style="display:none;" role="grid" aria-label="互動網格"></div>
+      </div>
+
+      <!-- Action bar (Reset + Save) -->
+      <div class="action-bar">
+        <button class="btn-secondary btn-reset-main" id="btn-reset" aria-label="重新設定此網格">
+          ↺ &nbsp;重新開始
+        </button>
+        <button class="btn-save" id="btn-save" disabled aria-label="儲存設定">
+          ✓ &nbsp;儲存設定
+        </button>
+      </div>
+
+      <!-- Saved result card -->
+      <div class="saved-card" id="saved-card" aria-live="polite">
+        <strong>✓ 已儲存設定：</strong><br>
+        <span id="saved-info"></span>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+  <script src="{{ url_for('static', filename='grid.js') }}"></script>
+</body>
+</html>

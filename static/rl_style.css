@@ -1,0 +1,39 @@
+/* ============================
+   RL Extensions
+   ============================ */
+
+.cell-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
+
+.cell-policy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 1; /* Below value */
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.cell.obstacle .cell-value,
+.cell.obstacle .cell-policy {
+  display: none; /* No values on obstacles */
+}
+
+
