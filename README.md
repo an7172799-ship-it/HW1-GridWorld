@@ -2,7 +2,7 @@
 
 這是一個基於 Flask 開發的互動式 Web 應用程式，專案主要目標為將「網格世界 (GridWorld)」與**強化學習**中的兩個經典演算法：**策略評估 (Policy Evaluation)** 和 **值迭代 (Value Iteration)** 進行視覺化整合。
 
-✨ **[線上永久試玩 Demo (GitHub Pages)](https://an7172799-ship-it.github.io/HW1-GridWorld/docs/)** ✨
+✨ **[線上永久試玩 Demo (Vercel)](https://hw-1-grid-world.vercel.app/)** ✨
 
 ## 🌟 核心功能
 
