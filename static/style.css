@@ -11,8 +11,8 @@
   --accent-blue:   #3b82f6;
   --accent-violet: #6366f1;
   --accent-cyan:   #06b6d4;
-  --cell-default:  #ffffff;
-  --cell-hover:    #f1f5f9;
+  --cell-default:  #f1f5f9;
+  --cell-hover:    #e2e8f0;
   --cell-start:    #22c55e;
   --cell-end:      #ef4444;
   --cell-obstacle: #64748b;
@@ -360,7 +360,7 @@ main {
   width: 52px;
   height: 52px;
   background: var(--cell-default);
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
