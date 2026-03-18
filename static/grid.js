@@ -318,9 +318,10 @@ async function runRL(algorithm) {
     
     if (data.success) {
       if (algorithm === 'policy_evaluation') {
-        renderRLResults(data.V, null); // 只有數值
+        renderRLResults(data.V, null); // Only value for Policy Evaluation
       } else if (algorithm === 'value_iteration') {
-        renderRLResults(null, data.policy); // 只有策略箭頭
+        renderRLResults(data.V, data.policy); // Value + Policy arrows for Value Iteration
+        highlightOptimalPath(data.policy);
       }
       showToast('強化學習執行完成！', 'success');
     } else {
@@ -333,6 +334,7 @@ async function runRL(algorithm) {
 
 function clearRLResults() {
   document.querySelectorAll('.cell-value, .cell-policy').forEach(el => el.remove());
+  document.querySelectorAll('.cell').forEach(el => el.classList.remove('optimal-path'));
 }
 
 function renderRLResults(V, policy) {
@@ -363,6 +365,37 @@ function renderRLResults(V, policy) {
         cell.appendChild(polSpan);
       }
     }
+  }
+}
+
+function highlightOptimalPath(policy) {
+  // Clear existing paths first
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('optimal-path'));
+
+  const maxSteps = currentN * currentN; // Prevent infinite loops
+  let currentPos = `${startCell.row},${startCell.col}`;
+  let steps = 0;
+
+  while(steps < maxSteps) {
+    const action = policy[currentPos];
+    if (!action || action === 'TERMINAL') break;
+
+    const [rStr, cStr] = currentPos.split(',');
+    let r = parseInt(rStr, 10);
+    let c = parseInt(cStr, 10);
+
+    const cell = document.getElementById(`cell-${r}-${c}`);
+    if (cell && !cell.classList.contains('start') && !cell.classList.contains('end')) {
+      cell.classList.add('optimal-path');
+    }
+
+    if (action === 'UP') r -= 1;
+    else if (action === 'DOWN') r += 1;
+    else if (action === 'LEFT') c -= 1;
+    else if (action === 'RIGHT') c += 1;
+
+    currentPos = `${r},${c}`;
+    steps++;
   }
 }
 
