@@ -317,39 +317,51 @@ function buildEnv() {
 
 function runPolicyEvaluation(env, gamma=0.9, theta=1e-6) {
   const { states, actions, getTransitions } = env;
+  const endStr = `${endCell.row},${endCell.col}`;
+
+  // Step 1: 隨機指派一個動作給每個非終止格子（隨機策略）
+  const policy = {};
+  states.forEach(s => {
+    const sStr = `${s[0]},${s[1]}`;
+    if (sStr === endStr) {
+      policy[sStr] = 'TERMINAL';
+    } else {
+      policy[sStr] = actions[Math.floor(Math.random() * actions.length)];
+    }
+  });
+
+  // Step 2: 對固定的隨機策略做策略評估，推導每個狀態的 V(s)
   const V = {};
   states.forEach(s => V[`${s[0]},${s[1]}`] = 0.0);
 
-  // max iterations to prevent infinite loops in JS thread
   let iters = 0;
-  while(iters < 1000) {
+  while (iters < 1000) {
     iters++;
     let delta = 0;
     states.forEach(s => {
       const sStr = `${s[0]},${s[1]}`;
+      if (policy[sStr] === 'TERMINAL') return;
+
       const v = V[sStr];
+      const a = policy[sStr];   // 固定動作，不是 uniform
       let new_v = 0;
 
-      actions.forEach(a => {
-        const prob_a = 0.25;
-        const transitions = getTransitions(s, a);
-        transitions.forEach(t => {
-          const [prob_trans, next_s, reward, is_term] = t;
-          new_v += prob_a * prob_trans * (reward + gamma * V[`${next_s[0]},${next_s[1]}`]);
-        });
+      getTransitions(s, a).forEach(t => {
+        const [prob_trans, next_s, reward, is_term] = t;
+        new_v += prob_trans * (reward + gamma * V[`${next_s[0]},${next_s[1]}`]);
       });
+
       V[sStr] = new_v;
       delta = Math.max(delta, Math.abs(v - new_v));
     });
     if (delta < theta) break;
   }
-  
-  // formatting V
+
   const formattedV = {};
-  for(let key in V) {
+  for (let key in V) {
     formattedV[key] = Number(V[key].toFixed(2));
   }
-  return formattedV;
+  return { V: formattedV, policy };
 }
 
 function runValueIteration(env, gamma=0.9, theta=1e-6) {
@@ -427,8 +439,8 @@ async function runRL(algorithm) {
       const env = buildEnv();
       
       if (algorithm === 'policy_evaluation') {
-        const V = runPolicyEvaluation(env);
-        renderRLResults(V, null);
+        const { V, policy } = runPolicyEvaluation(env);
+        renderRLResults(V, policy);
       } else if (algorithm === 'value_iteration') {
         const { V, policy } = runValueIteration(env);
         renderRLResults(V, policy);
